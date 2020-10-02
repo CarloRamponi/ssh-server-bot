@@ -1,0 +1,28 @@
+{
+  "name": "ssh-server-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot that help you manage and control your SSH server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "run": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarloRamponi/ssh-server-bot.git"
+  },
+  "author": "Carlo Ramponi <magocarlos1999@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CarloRamponi/ssh-server-bot/issues"
+  },
+  "homepage": "https://github.com/CarloRamponi/ssh-server-bot#readme",
+  "dependencies": {
+    "dateformat": "^3.0.3",
+    "http": "0.0.1-security",
+    "https": "^1.0.0",
+    "node-telegram-bot-api": "^0.50.0",
+    "promise": "^8.1.0",
+    "url": "^0.11.0"
+  }
+}
