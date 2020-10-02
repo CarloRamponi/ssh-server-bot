@@ -59,6 +59,8 @@ at: *${dateformat(Date.now(), "HH:MM:ss")}*
 
 server.startServer(port, onData, "Welcome to SSH-SERVER-BOT server\nHere you can send me useful info that I will send to my owner!\n");
 
+bot.sendMessage(chatid, "I'm online!");
+
 // // Matches "/echo [whatever]"
 // bot.onText(/\/echo (.+)/, (msg, match) => {
 //   // 'msg' is the received Message from Telegram
