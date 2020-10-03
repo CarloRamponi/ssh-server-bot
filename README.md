@@ -45,7 +45,9 @@ Telegram bot that help you manage and control your SSH server
   Type=simple
   User=sshbot
   WorkingDirectory=/home/sshbot/ssh-server-bot
-  ExecStart=/usr/local/bin/nodemon .
+  ExecStart=/usr/bin/node index.js
+  Restart=on-failure
+  RestartSec=5s
 
   [Install]
   WantedBy=multi-user.target

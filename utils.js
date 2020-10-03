@@ -51,5 +51,12 @@ async function getIpInfo() {
   return beautify(response);
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 exports.beautify = beautify;
 exports.getIpInfo = getIpInfo;
+exports.sleep = sleep;

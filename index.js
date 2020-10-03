@@ -43,6 +43,18 @@ bot.onText(/\/ip/, async (msg) => {
   }
 })
 
+bot.onText(/\/reboot/, async (msg) => {
+  if(checkChatId(msg)) {
+    bot.sendMessage(msg.chat.id, "Rebooting...", {parse_mode : "Markdown"});
+    exec(`reboot`, (err, stdout, stderr) => {
+      if(err) {
+        log.log(err, stdout, stderr);
+        bot.sendMessage(chatid, "Reboot request failed 😔");
+      }
+    });
+  }
+})
+
 bot.on('callback_query',  (query) => {
 
   let match;
@@ -56,17 +68,25 @@ bot.on('callback_query',  (query) => {
     let user = args[1];
     let tty = args[2];
 
-    exec(`echo "Fuck you" | sudo write ${user} ${tty} ; sleep 2 ; sudo kill ${pid}`, (err, stdout, stderr) => {
+    exec(`echo -e "\n\n *** Fuck you *** \n\n" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
       if(err) {
         log.log(err, stdout, stderr);
         bot.sendMessage(chatid, "Unable to kick this user 😔");
       } else {
-        bot.sendMessage(chatid, "User successfully kicked 😇");
-      }
+        await utils.sleep(2000);
+        exec(`sudo kill ${pid}`, (err, stdout, stderr) => {
+          if(err) {
+            log.log(err, stdout, stderr);
+            bot.sendMessage(chatid, "Unable to kick this user 😔");
+          } else {
+            bot.sendMessage(chatid, "User successfully kicked 😇");
+          }
 
-      bot.answerCallbackQuery({
-          callback_query_id: query.id
-      });
+          bot.answerCallbackQuery({
+              callback_query_id: query.id
+          });
+        });
+      }
     });
   }
 
