@@ -31,7 +31,7 @@ Telegram bot that help you manage and control your SSH server
 - Run `npm install` in the project folder
 - Allow him to run the kill command and the write as root without a password, run `visudo` and add this line at the end of that file
   ```
-  sshbot ALL= NOPASSWD: /bin/kill, /usr/bin/write
+  sshbot ALL= NOPASSWD: /bin/kill, /usr/bin/write, /sbin/reboot
   ```
   This allows him to kick ssh connections if needed
 - Open `/etc/ssh/sshrc` and insert the `./sshrc` content (create the file if needed)

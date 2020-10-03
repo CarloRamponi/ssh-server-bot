@@ -47,7 +47,7 @@ bot.onText(/\/ip/, async (msg) => {
 bot.onText(/\/reboot/, async (msg) => {
   if(checkChatId(msg)) {
     bot.sendMessage(msg.chat.id, "Rebooting...", {parse_mode : "Markdown"});
-    exec(`reboot`, (err, stdout, stderr) => {
+    exec(`sudo reboot`, (err, stdout, stderr) => {
       if(err) {
         log.log(err, stdout, stderr);
         bot.sendMessage(chatid, "Reboot request failed 😔");
