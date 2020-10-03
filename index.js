@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const utils = require('./utils.js');
 const server = require('./server.js');
 const dateformat = require('dateformat');
+const { exec } = require('child_process');
 
 const env = require('./env-file.json');
 
@@ -37,20 +38,52 @@ bot.onText(/\/ip/, async (msg) => {
   }
 })
 
+bot.on('callback_query',  (query) => {
+
+  let match;
+
+  match = query.data.match(/kick (.+)/);
+  if(match) {
+    let pid = match[1];
+    exec(`kill ${pid}`, (err, stdout, stderr) => {
+      if(err) {
+        bot.sendMessage(chatid, "Unable to kick this user 😔");
+      } else {
+        bot.sendMessage(chatid, "User successfully kicked 😇")
+      }
+
+      bot.answerCallbackQuery({
+          callback_query_id: query.id
+      });
+    });
+  }
+
+})
+
 function onData(data) {
 
   let match;
   match = data.toString().match(/\/login (.+)/);
   if(match) {
     let arg = JSON.parse(match[1]);
-    bot.sendMessage(chatid, `
-*New Access*
-from: *${arg.ip}*
-user: *${arg.user}*
-on: *${dateformat(Date.now(), "dd mmmm yyyy")}*
-at: *${dateformat(Date.now(), "HH:MM:ss")}*
-    `, {parse_mode : "Markdown"});
-    console.log(arg);
+
+    let inline_keyboard = [[
+      {
+          text: 'Kick 👞🍑',
+          callback_data: `kick ${arg.pid}`
+      },
+    ]];
+
+    bot.sendMessage(chatid, "*New Access*\n" + utils.beautify({
+      from: arg.ip,
+      user: arg.user,
+      on: dateformat(Date.now(), "dd mmmm yyyy"),
+      at: dateformat(Date.now(), "HH:MM:ss")
+    }), {
+      parse_mode : "Markdown",
+      reply_markup: { inline_keyboard }
+    });
+
     return "Access notified"
   }
 
