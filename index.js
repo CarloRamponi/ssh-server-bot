@@ -6,13 +6,17 @@ const { exec } = require('child_process');
 
 const env = require('./env-file.json');
 
+const { Logger } = require("./logger.js");
+
+const log = new Logger("TelegramBot");
+
 const token = env.token;
 const chatid = env.chat_id;
 const port = env.port;
 
-console.log("Starting SSH-SERVER-BOT with:");
-console.log("TOKEN: " + token);
-console.log("ID: " + chatid);
+log.log("Starting SSH-SERVER-BOT with:");
+log.log("TOKEN: " + token);
+log.log("ID: " + chatid);
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(token, {polling: true});
@@ -28,6 +32,7 @@ function checkChatId(msg) {
 }
 
 bot.onText(/\/start/, (msg) => {
+  log.log("Received /start from " + msg.chat.id)
   bot.sendMessage(msg.chat.id, "Hello! This is your chat id: " + msg.chat.id + "\nYou *are" + (msg.chat.id == chatid ? "" : " NOT") + "* authorized to use this bot.", {parse_mode : "Markdown"});
 });
 
@@ -53,7 +58,7 @@ bot.on('callback_query',  (query) => {
 
     exec(`echo "Fuck you" | sudo write ${user} ${tty} ; sleep 2 ; sudo kill ${pid}`, (err, stdout, stderr) => {
       if(err) {
-        console.log(err, stdout, stderr);
+        log.log(err, stdout, stderr);
         bot.sendMessage(chatid, "Unable to kick this user 😔");
       } else {
         bot.sendMessage(chatid, "User successfully kicked 😇");
