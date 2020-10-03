@@ -1,5 +1,14 @@
 #!/bin/bash
 
 ip=`echo $SSH_CONNECTION | cut -d " " -f 1`
+tty=`ps -p $$ | tail -n 1 | cut -d " " -f 2`
 
-echo "/login { \"ip\": \"$ip\", \"user\": \"$USER\", \"pid\": \"$$\" }" | nc localhost 8080
+JSON_FORMAT_STRING='{ip: $ip, user: $user, pid: $pid, tty: $tty}'
+JSON_PAYLOAD=$(jq -n \
+                --arg ip "$ip" \
+                --arg user "$USER" \
+                --arg pid "$$" \
+                --arg tty "$tty" \
+                "$JSON_FORMAT_STRING")
+
+echo "/login $JSON_PAYLOAD" | nc localhost 8080

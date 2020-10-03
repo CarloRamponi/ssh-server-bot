@@ -42,14 +42,21 @@ bot.on('callback_query',  (query) => {
 
   let match;
 
-  match = query.data.match(/kick (.+)/);
+  match = query.data.match(/\/kick (.+)/);
   if(match) {
-    let pid = match[1];
-    exec(`kill ${pid}`, (err, stdout, stderr) => {
+
+    let args = match[1].split(" ");
+
+    let pid = args[0];
+    let user = args[1];
+    let tty = args[2];
+
+    exec(`echo "Fuck you" | sudo write ${user} ${tty} ; sleep 2 ; sudo kill ${pid}`, (err, stdout, stderr) => {
       if(err) {
+        console.log(err, stdout, stderr);
         bot.sendMessage(chatid, "Unable to kick this user 😔");
       } else {
-        bot.sendMessage(chatid, "User successfully kicked 😇")
+        bot.sendMessage(chatid, "User successfully kicked 😇");
       }
 
       bot.answerCallbackQuery({
@@ -70,7 +77,7 @@ function onData(data) {
     let inline_keyboard = [[
       {
           text: 'Kick 👞🍑',
-          callback_data: `kick ${arg.pid}`
+          callback_data: `/kick ${arg.pid} ${arg.user} ${arg.tty}`
       },
     ]];
 
