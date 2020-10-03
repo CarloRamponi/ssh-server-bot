@@ -1,13 +1,14 @@
 #!/bin/bash
 
 ip=`echo $SSH_CONNECTION | cut -d " " -f 1`
-tty=`ps -p $$ | tail -n 1 | cut -d " " -f 3`
+pid=`ps | head -n 2 | tail -n 1 | cut -d " " -f 2`
+tty=`ps | head -n 2 | tail -n 1 | cut -d " " -f 3`
 
 JSON_FORMAT_STRING='{ip: $ip, user: $user, pid: $pid, tty: $tty}'
 JSON_PAYLOAD=$(jq -n --compact-output \
                 --arg ip "$ip" \
                 --arg user "$USER" \
-                --arg pid "$$" \
+                --arg pid "$pid" \
                 --arg tty "$tty" \
                 "$JSON_FORMAT_STRING")
 

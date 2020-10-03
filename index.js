@@ -3,6 +3,7 @@ const utils = require('./utils.js');
 const server = require('./server.js');
 const dateformat = require('dateformat');
 const { exec } = require('child_process');
+const figlet = require('figlet');
 
 const env = require('./env-file.json');
 
@@ -68,26 +69,34 @@ bot.on('callback_query',  (query) => {
     let user = args[1];
     let tty = args[2];
 
-    exec(`echo -e "\n\n *** Fuck you *** \n\n" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
-      if(err) {
-        log.log(err, stdout, stderr);
-        bot.sendMessage(chatid, "Unable to kick this user 😔");
-      } else {
-        await utils.sleep(2000);
-        exec(`sudo kill ${pid}`, (err, stdout, stderr) => {
-          if(err) {
-            log.log(err, stdout, stderr);
-            bot.sendMessage(chatid, "Unable to kick this user 😔");
-          } else {
-            bot.sendMessage(chatid, "User successfully kicked 😇");
-          }
+    figlet('Fuck You', (err, data) => {
 
-          bot.answerCallbackQuery({
-              callback_query_id: query.id
-          });
-        });
+      if(err) {
+        data = "\n\n *** FUCK YOU *** \n\n";
       }
-    });
+
+      exec(`echo -e "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
+        if(err) {
+          log.log(err, stdout, stderr);
+          bot.sendMessage(chatid, "Unable to kick this user 😔");
+        } else {
+          await utils.sleep(2000);
+          exec(`sudo kill ${pid}`, (err, stdout, stderr) => {
+            if(err) {
+              log.log(err, stdout, stderr);
+              bot.sendMessage(chatid, "Unable to kick this user 😔");
+            } else {
+              bot.sendMessage(chatid, "User successfully kicked 😇");
+            }
+
+            bot.answerCallbackQuery({
+                callback_query_id: query.id
+            });
+          });
+        }
+      });
+
+    })
   }
 
 })
