@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ip=`echo $SSH_CONNECTION | cut -d " " -f 1`
+
+echo "/login { \"ip\": \"$ip\", \"user\": \"$USER\", \"pid\": \"$$\" }" | nc localhost 8080
