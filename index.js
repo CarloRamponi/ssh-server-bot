@@ -75,7 +75,7 @@ bot.on('callback_query',  (query) => {
         data = "\n\n *** FUCK YOU *** \n\n";
       }
 
-      exec(`echo -e "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
+      exec(`echo "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
         if(err) {
           log.log(err, stdout, stderr);
           bot.sendMessage(chatid, "Unable to kick this user 😔");
