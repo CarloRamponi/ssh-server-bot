@@ -1,6 +1,7 @@
 const http = require('http');
 const Promise = require('promise');
 const url = require('url');
+const { exec } = require('child_process');
 
 const env = require('./env-file.json');
 const ip_info_token = env.ipinfo_token;
@@ -57,6 +58,19 @@ function sleep(ms) {
   });
 }
 
+function waitForProcess(pid) {
+  return new Promise((resolve, reject) => {
+    exec(`tail --pid=${pid} -f /dev/null`, (err, stdout, stderr) => {
+      if(err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    })
+  });
+}
+
 exports.beautify = beautify;
 exports.getIpInfo = getIpInfo;
 exports.sleep = sleep;
+exports.waitForProcess = waitForProcess;
