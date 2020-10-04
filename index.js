@@ -107,7 +107,7 @@ bot.on('callback_query',  (query) => {
 
 })
 
-function onData(data) {
+function onData(data) async {
 
   let match;
   match = data.toString().match(/\/login (.+)/);
