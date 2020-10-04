@@ -136,11 +136,7 @@ async function onData(data) {
     utils.waitForProcess(arg.pid).then((value) => {
       bot.editMessageText(messageText + "\n(Session ended)", {
         chat_id: chatid,
-<<<<<<< HEAD
         message_id: message.message_id,
-=======
-        message_id: message.message_id
->>>>>>> 40eb2a55f90e70251131e0bb9d2e6ec49dae6b26
         parse_mode : "Markdown",
         reply_markup: {}
       })
