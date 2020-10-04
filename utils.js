@@ -47,9 +47,14 @@ function beautify(obj) {
   return Object.keys(obj).map((key) => key + ": *" + obj[key] + "*").join('\n');
 }
 
-async function getIpInfo() {
-  let response = await getRequest('ipinfo.io', '/', { token: ip_info_token });
-  return beautify(response);
+async function getIpInfo(ip) {
+  if(ip) {
+    let response = await getRequest('ipinfo.io', '/' + ip, { token: ip_info_token });
+    return beautify(response);
+  } else {
+    let response = await getRequest('ipinfo.io', '/', { token: ip_info_token });
+    return beautify(response);
+  }
 }
 
 function sleep(ms) {

@@ -56,7 +56,7 @@ bot.onText(/\/reboot/, async (msg) => {
   }
 })
 
-bot.on('callback_query',  (query) => {
+bot.on('callback_query', (query) => {
 
   let match;
 
@@ -105,7 +105,31 @@ bot.on('callback_query',  (query) => {
     })
   }
 
-})
+
+  match = query.data.match(/\/ipinfo (.+)/);
+  if(match) {
+
+    let ip = match[1].trim();
+
+    utils.getIpInfo(ip).then((result) => {
+
+      bot.sendMessage(chatid, result, {parse_mode : "Markdown"});
+
+      bot.answerCallbackQuery({
+          callback_query_id: query.id
+      });
+    }).catch((error) => {
+
+      log.log(error);
+
+      bot.answerCallbackQuery({
+          callback_query_id: query.id
+      });
+    });
+
+  }
+
+});
 
 async function onData(data) {
 
@@ -114,12 +138,15 @@ async function onData(data) {
   if(match) {
     let arg = JSON.parse(match[1]);
 
-    let inline_keyboard = [[
-      {
-          text: 'Kick 👞🍑',
-          callback_data: `/kick ${arg.pid} ${arg.user} ${arg.tty}`
-      },
-    ]];
+    let kick_btn = {
+      text: 'Kick 👞🍑',
+      callback_data: `/kick ${arg.pid} ${arg.user} ${arg.tty}`
+    };
+
+    let ipinfo_btn = {
+      text: 'IP info',
+      callback_data: `/ipinfo ${arg.ip}`
+    };
 
     var messageText = "*New Access*\n" + utils.beautify({
       from: arg.ip,
@@ -130,7 +157,10 @@ async function onData(data) {
 
     var message = await bot.sendMessage(chatid, messageText, {
       parse_mode : "Markdown",
-      reply_markup: { inline_keyboard }
+      reply_markup: {[
+        [ ipinfo_btn ],
+        [ kick_btn ]
+      ]}
     });
 
     try {
@@ -141,7 +171,9 @@ async function onData(data) {
           chat_id: chatid,
           message_id: message.message_id,
           parse_mode : "Markdown",
-          reply_markup: {}
+          reply_markup: {[
+            [ ipinfo_btn ]
+          ]}
         })
       });
     } catch (e) {
