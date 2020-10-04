@@ -184,7 +184,7 @@ bot.on('callback_query', (query) => {
 
 });
 
-async function onData(data) {
+function onData(data) {
 
   let match;
   match = data.toString().match(/\/login (.+)/);
@@ -208,7 +208,7 @@ async function onData(data) {
       at: dateformat(Date.now(), "HH:MM:ss")
     });
 
-    var message = await bot.sendMessage(chatid, messageText, {
+    bot.sendMessage(chatid, messageText, {
       parse_mode : "Markdown",
       reply_markup: {
         inline_keyboard: [
@@ -216,26 +216,26 @@ async function onData(data) {
           [ kick_btn ]
         ]
       }
+    }).then((message) => {
+      try {
+        const pid = parseInt(arg.pid);
+
+        utils.waitForProcess(pid).then((value) => {
+          bot.editMessageText(messageText + "\n(Session ended)", {
+            chat_id: chatid,
+            message_id: message.message_id,
+            parse_mode : "Markdown",
+            reply_markup: {
+              inline_keyboard: [
+                [ ipinfo_btn ]
+              ]
+            }
+          })
+        });
+      } catch (e) {
+        console.log(e);
+      }
     });
-
-    try {
-      const pid = parseInt(arg.pid);
-
-      utils.waitForProcess(pid).then((value) => {
-        bot.editMessageText(messageText + "\n(Session ended)", {
-          chat_id: chatid,
-          message_id: message.message_id,
-          parse_mode : "Markdown",
-          reply_markup: {
-            inline_keyboard: [
-              [ ipinfo_btn ]
-            ]
-          }
-        })
-      });
-    } catch (e) {
-      console.log(e);
-    }
 
     return "Access notified";
   }
