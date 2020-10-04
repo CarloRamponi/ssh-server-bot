@@ -133,14 +133,20 @@ async function onData(data) {
       reply_markup: { inline_keyboard }
     });
 
-    utils.waitForProcess(arg.pid).then((value) => {
-      bot.editMessageText(messageText + "\n(Session ended)", {
-        chat_id: chatid,
-        message_id: message.message_id,
-        parse_mode : "Markdown",
-        reply_markup: {}
-      })
-    });
+    try {
+      const pid = parseInt(arg.pid);
+
+      utils.waitForProcess(pid).then((value) => {
+        bot.editMessageText(messageText + "\n(Session ended)", {
+          chat_id: chatid,
+          message_id: message.message_id,
+          parse_mode : "Markdown",
+          reply_markup: {}
+        })
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
     return "Access notified";
   }
