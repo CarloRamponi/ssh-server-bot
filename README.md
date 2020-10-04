@@ -11,12 +11,12 @@ Telegram bot that help you manage and control your SSH server
 - Create a telegram bot and get the token
 - If you want telegram to autocomplete commands, send this message to botfather when asked:
   ```
-  /help - displays a help message
-  /ip - displays info about server's ip address
-  /reboot - reboots the server
-  /status - displays the status of sshd service
-  /staccah - shuts down sshd service (emergency mode)
-  /riattaccah - starts sshd service (exit emergency mode)
+  help - displays a help message
+  ip - displays info about server's ip address
+  reboot - reboots the server
+  status - displays the status of sshd service
+  staccah - shuts down sshd service (emergency mode (open sessions won't be ended))
+  riattaccah - starts sshd service (exit emergency mode)
   ```
 - Create a user named `sshbot`
   ```

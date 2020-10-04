@@ -12,11 +12,12 @@ const ADDRESS = '127.0.0.1';
 async function startServer(port, onData, wellcomeMessage) {
   server.on('connection', (socket) => {
     socket.write(wellcomeMessage);
-    socket.on('data', (data) => {
+    socket.on('data', async (data) => {
       log.log(`received: ${data}`)
-      onData(data).then((response) => {
+      let response = await onData(data);
+      try { //connection could be already finished, but it's not a problem
         socket.write(response+'\n');
-      });
+      } catch (error) {}
     });
   });
 

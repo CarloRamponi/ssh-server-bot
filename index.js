@@ -52,9 +52,9 @@ bot.onText(/\/help/, async (msg) => {
 /ip ~ displays info about server's ip address
 /reboot ~ reboots the server
 /status ~ displays the status of sshd service
-/staccah ~ shuts down sshd service (emergency mode)
+/staccah ~ shuts down sshd service (emergency mode (open sessions won't be ended))
 /riattaccah ~ starts sshd service (exit emergency mode)`;
-    bot.sendMessage(chatid, , {parse_mode : "Markdown"});
+    bot.sendMessage(chatid, helpmsg, {parse_mode : "Markdown"});
   }
 });
 
