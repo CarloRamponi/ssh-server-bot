@@ -16,4 +16,4 @@ JSON_PAYLOAD=$(jq -n --compact-output \
                 --arg tty "$tty" \
                 "$JSON_FORMAT_STRING")
 
-echo "/login $JSON_PAYLOAD" | nc localhost 8080
+echo "/login $JSON_PAYLOAD" | nc localhost 8080 > /dev/null

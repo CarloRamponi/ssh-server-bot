@@ -128,31 +128,18 @@ bot.on('callback_query', (query) => {
         data = `\n\n *** ${kick_text} *** \n\n`;
       }
 
-      exec(`echo "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
+      exec(`echo "${data}" | sudo write ${user} ${tty} ; sleep 2; sudo kill ${pid}`, (err, stdout, stderr) => {
+        
         if(err) {
-
           log.log(err, stdout, stderr);
           bot.sendMessage(chatid, "Unable to kick this user 😔");
-
-          bot.answerCallbackQuery({
-              callback_query_id: query.id
-          });
-
         } else {
-          await utils.sleep(2000);
-          exec(`sudo kill ${pid}`, (err, stdout, stderr) => {
-            if(err) {
-              log.log(err, stdout, stderr);
-              bot.sendMessage(chatid, "Unable to kick this user 😔");
-            } else {
-              bot.sendMessage(chatid, "User successfully kicked 😇");
-            }
-
-            bot.answerCallbackQuery({
-                callback_query_id: query.id
-            });
-          });
+          bot.sendMessage(chatid, "User successfully kicked 😇");
         }
+
+        bot.answerCallbackQuery({
+            callback_query_id: query.id
+        });
       });
 
     })
