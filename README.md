@@ -23,7 +23,7 @@ Telegram bot that help you manage and control your SSH server
   useradd --create-home sshbot
   ```
 - Clone this repo in the ssh bot's home folder (`/home/sshbot`)
-- Create the config file `/home/sshbot/env-file.json`
+- Create the config file `/home/sshbot/ssh-server-bot/env-file.json`
   ```
   {
     "token": "YOUR_TOKEN_HERE",
@@ -36,7 +36,7 @@ Telegram bot that help you manage and control your SSH server
   Where:
   - `token` is the bot token provided by the botfather,
   - `chat_id` is your chat id (if you don't know it you can leave it blank and the first message you'll send to the bot (`/start`) will let you know your chat id)
-  - `ipinfo_token` is the token provided by [ipinfo.io](ipinfo.io)
+  - `ipinfo_token` is the token provided by [ipinfo.io](https://ipinfo.io)
   - `port` is the port where the TCP server will listen for local events (e.g. SSH connection)
   - `kick_text` is the text a user will be displayed when about to be kicked (in a cool ascii art, so the shorter the better... e.g. "Fuck you")
 - Run `npm install` in the project folder
