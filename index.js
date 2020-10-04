@@ -157,10 +157,12 @@ async function onData(data) {
 
     var message = await bot.sendMessage(chatid, messageText, {
       parse_mode : "Markdown",
-      reply_markup: {[
-        [ ipinfo_btn ],
-        [ kick_btn ]
-      ]}
+      reply_markup: {
+        inline_keyboard: [
+          [ ipinfo_btn ],
+          [ kick_btn ]
+        ]
+      }
     });
 
     try {
@@ -171,9 +173,11 @@ async function onData(data) {
           chat_id: chatid,
           message_id: message.message_id,
           parse_mode : "Markdown",
-          reply_markup: {[
-            [ ipinfo_btn ]
-          ]}
+          reply_markup: {
+            inline_keyboard: [
+              [ ipinfo_btn ]
+            ]
+          }
         })
       });
     } catch (e) {
