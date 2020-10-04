@@ -14,6 +14,7 @@ const log = new Logger("TelegramBot");
 const token = env.token;
 const chatid = env.chat_id;
 const port = env.port;
+const kick_text = env.kick_text;
 
 log.log("Starting SSH-SERVER-BOT with:");
 log.log("TOKEN: " + token);
@@ -42,7 +43,59 @@ bot.onText(/\/ip/, async (msg) => {
     const ipinfo = await utils.getIpInfo();
     bot.sendMessage(msg.chat.id, ipinfo, {parse_mode : "Markdown"});
   }
-})
+});
+
+bot.onText(/\/help/, async (msg) => {
+  if(checkChatId(msg)) {
+    let helpmsg = `Available commands:
+/help ~ displays this help message
+/ip ~ displays info about server's ip address
+/reboot ~ reboots the server
+/status ~ displays the status of sshd service
+/staccah ~ shuts down sshd service (emergency mode)
+/riattaccah ~ starts sshd service (exit emergency mode)`;
+    bot.sendMessage(chatid, , {parse_mode : "Markdown"});
+  }
+});
+
+bot.onText(/\/status/, async (msg) => {
+  if(checkChatId(msg)) {
+    exec('systemctl status sshd', (err, stdout, stderr) => {
+      let message;
+      if(err) {
+        message = "SSHD status:\n🔴 *Not running*";
+      } else {
+        message = "SSHD status:\n🟢 *Running*";
+      }
+
+      bot.sendMessage(chatid, message, {parse_mode : "Markdown"});
+    })
+  }
+});
+
+bot.onText(/\/staccah/, async (msg) => {
+  if(checkChatId(msg)) {
+    exec('sudo systemctl stop sshd', (err, stdout, stderr) => {
+      if(err) {
+        bot.sendMessage(chatid, "Unable to stop sshd server\nI think you should call the [police](tel:112)", {parse_mode : "Markdown"});
+      } else {
+        bot.sendMessage(chatid, "Sshd server successfully stopped\nYou are safe for now.", {parse_mode : "Markdown"});
+      }
+    })
+  }
+});
+
+bot.onText(/\/riattaccah/, async (msg) => {
+  if(checkChatId(msg)) {
+    exec('sudo systemctl start sshd', (err, stdout, stderr) => {
+      if(err) {
+        bot.sendMessage(chatid, "Unable to start sshd server\nYou locked yourself out lol\nMaybe /reboot ?", {parse_mode : "Markdown"});
+      } else {
+        bot.sendMessage(chatid, "Sshd server successfully start\nTry to connect and let me know if it's working.", {parse_mode : "Markdown"});
+      }
+    })
+  }
+});
 
 bot.onText(/\/reboot/, async (msg) => {
   if(checkChatId(msg)) {
@@ -69,10 +122,10 @@ bot.on('callback_query', (query) => {
     let user = args[1];
     let tty = args[2];
 
-    figlet('Fuck You', (err, data) => {
+    figlet(kick_text, (err, data) => {
 
       if(err) {
-        data = "\n\n *** FUCK YOU *** \n\n";
+        data = `\n\n *** ${kick_text} *** \n\n`;
       }
 
       exec(`echo "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
