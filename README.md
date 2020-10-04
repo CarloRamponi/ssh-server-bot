@@ -44,7 +44,7 @@ Telegram bot that help you manage and control your SSH server
   ```
   sshbot ALL= NOPASSWD: /bin/kill, /usr/bin/write, /sbin/reboot, /bin/systemctl start sshd, /bin/systemctl stop sshd
   ```
-  This allows him to kick ssh connections if needed
+  This allows him to kick ssh connections if needed, reboot the system and start/stop sshd service
 - Open `/etc/ssh/sshrc` and insert the `./sshrc` content (create the file if needed)
   This will notify the user every time a ssh connection is established
 - Create the service file `/lib/systemd/system/ssh-server-bot.service`
