@@ -77,8 +77,14 @@ bot.on('callback_query',  (query) => {
 
       exec(`echo "${data}" | sudo write ${user} ${tty} ;`, async (err, stdout, stderr) => {
         if(err) {
+
           log.log(err, stdout, stderr);
           bot.sendMessage(chatid, "Unable to kick this user 😔");
+
+          bot.answerCallbackQuery({
+              callback_query_id: query.id
+          });
+
         } else {
           await utils.sleep(2000);
           exec(`sudo kill ${pid}`, (err, stdout, stderr) => {
@@ -101,7 +107,7 @@ bot.on('callback_query',  (query) => {
 
 })
 
-function onData(data) {
+async function onData(data) {
 
   let match;
   match = data.toString().match(/\/login (.+)/);
@@ -115,17 +121,28 @@ function onData(data) {
       },
     ]];
 
-    bot.sendMessage(chatid, "*New Access*\n" + utils.beautify({
+    var messageText = "*New Access*\n" + utils.beautify({
       from: arg.ip,
       user: arg.user,
       on: dateformat(Date.now(), "dd mmmm yyyy"),
       at: dateformat(Date.now(), "HH:MM:ss")
-    }), {
+    });
+
+    var message = await bot.sendMessage(chatid, messageText, {
       parse_mode : "Markdown",
       reply_markup: { inline_keyboard }
     });
 
-    return "Access notified"
+    utils.waitForProcess(arg.pid).then((value) => {
+      bot.editMessageText(messageText + "\n(Session ended)", {
+        chat_id: chatid,
+        message_id: message.message_id,
+        parse_mode : "Markdown",
+        reply_markup: {}
+      })
+    });
+
+    return "Access notified";
   }
 
   return "Command not found";
