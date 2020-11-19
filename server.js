@@ -15,7 +15,7 @@ async function startServer(port, onData, wellcomeMessage) {
     socket.on('data', (data) => {
       log.log(`received: ${data}`)
       let response = onData(data);
-      socket.write(response+'\n');
+      socket.end(response+'\n');
     });
   });
 
