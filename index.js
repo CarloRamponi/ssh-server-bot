@@ -137,9 +137,7 @@ bot.on('callback_query', (query) => {
           bot.sendMessage(chatid, "User successfully kicked 😇");
         }
 
-        bot.answerCallbackQuery({
-            callback_query_id: query.id
-        });
+        bot.answerCallbackQuery(query.id);
       });
 
     })
@@ -155,16 +153,12 @@ bot.on('callback_query', (query) => {
 
       bot.sendMessage(chatid, result, {parse_mode : "Markdown"});
 
-      bot.answerCallbackQuery({
-          callback_query_id: query.id
-      });
+      bot.answerCallbackQuery(query.id);
     }).catch((error) => {
 
       log.log(error);
 
-      bot.answerCallbackQuery({
-          callback_query_id: query.id
-      });
+      bot.answerCallbackQuery(query.id);
     });
 
   }
