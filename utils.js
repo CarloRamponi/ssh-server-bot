@@ -58,7 +58,7 @@ async function getIpInfo(ip) {
   }
 }
 
-async function getLocalIp() {
+function getLocalIp() {
   const nets = networkInterfaces();
   const results = Object.create(null); // Or just '{}', an empty object
   
@@ -73,6 +73,8 @@ async function getLocalIp() {
           }
       }
   }
+
+  return beautify(results);
 }
 
 function sleep(ms) {

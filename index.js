@@ -47,7 +47,7 @@ bot.onText(/\/ip/, async (msg) => {
 
 bot.onText(/\/local/, async (msg) => {
   if(checkChatId(msg)) {
-    const local = await utils.getLocalIp();
+    const local = utils.getLocalIp();
     bot.sendMessage(msg.chat.id, local, {parse_mode : "Markdown"});
   }
 });
