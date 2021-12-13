@@ -4,6 +4,7 @@ const server = require('./server.js');
 const dateformat = require('dateformat');
 const { exec } = require('child_process');
 const figlet = require('figlet');
+const fs = require('fs').promises;
 
 const env = require('./env-file.json');
 
@@ -136,18 +137,34 @@ bot.on('callback_query', (query) => {
         data = `\n\n *** ${kick_text} *** \n\n`;
       }
 
-      exec(`echo "${data}" | sudo write ${user} ${tty} ; sleep 2; sudo kill -9 ${pid}`, (err, stdout, stderr) => {
+      fs.writeFile(`/tmp/kick_${pid}`, data, {encoding : 'utf8'}).then(() => {
+        exec(`cat /tmp/kick_${pid} | sudo write ${user} ${tty} ; sleep 2; sudo kill -9 ${pid}`, (err, stdout, stderr) => {
         
-        if(err) {
-          log.log(err, stdout, stderr);
-          bot.sendMessage(chatid, "Unable to kick this user 😔");
-        } else {
-          bot.sendMessage(chatid, "User successfully kicked 😇");
-        }
+          if(err) {
+            log.log(err, stdout, stderr);
+            bot.sendMessage(chatid, "Unable to kick this user 😔");
+          } else {
+            bot.sendMessage(chatid, "User successfully kicked 😇");
+          }
+  
+          bot.answerCallbackQuery(query.id);
+        });
+      }).catch(err => {
+        
+        exec(`sudo kill -9 ${pid}`, (err, stdout, stderr) => {
+        
+          if(err) {
+            log.log(err, stdout, stderr);
+            bot.sendMessage(chatid, "Unable to kick this user 😔");
+          } else {
+            bot.sendMessage(chatid, "User successfully kicked 😇, but no error message was sent to him 😔");
+          }
+  
+          bot.answerCallbackQuery(query.id);
+        });
 
-        bot.answerCallbackQuery(query.id);
       });
-
+      
     })
   }
 
