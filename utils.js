@@ -2,6 +2,7 @@ const http = require('http');
 const Promise = require('promise');
 const url = require('url');
 const { exec } = require('child_process');
+const { networkInterfaces } = require('os');
 
 const env = require('./env-file.json');
 const ip_info_token = env.ipinfo_token;
@@ -57,6 +58,23 @@ async function getIpInfo(ip) {
   }
 }
 
+async function getLocalIp() {
+  const nets = networkInterfaces();
+  const results = Object.create(null); // Or just '{}', an empty object
+  
+  for (const name of Object.keys(nets)) {
+      for (const net of nets[name]) {
+          // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+          if (/*net.family === 'IPv4' &&*/ !net.internal) {
+              if (!results[name]) {
+                  results[name] = [];
+              }
+              results[name].push(net.address);
+          }
+      }
+  }
+}
+
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -79,3 +97,4 @@ exports.beautify = beautify;
 exports.getIpInfo = getIpInfo;
 exports.sleep = sleep;
 exports.waitForProcess = waitForProcess;
+exports.getLocalIp = getLocalIp;

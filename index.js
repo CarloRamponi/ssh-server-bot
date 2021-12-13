@@ -45,11 +45,19 @@ bot.onText(/\/ip/, async (msg) => {
   }
 });
 
+bot.onText(/\/local/, async (msg) => {
+  if(checkChatId(msg)) {
+    const local = await utils.getLocalIp();
+    bot.sendMessage(msg.chat.id, local, {parse_mode : "Markdown"});
+  }
+});
+
 bot.onText(/\/help/, async (msg) => {
   if(checkChatId(msg)) {
     let helpmsg = `Available commands:
 /help ~ displays this help message
 /ip ~ displays info about server's ip address
+/local ~ displays info about server's local ip addresses
 /reboot ~ reboots the server
 /status ~ displays the status of sshd service
 /staccah ~ shuts down sshd service (emergency mode (open sessions won't be ended))
