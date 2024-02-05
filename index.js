@@ -16,6 +16,7 @@ const token = env.token;
 const chatid = env.chat_id;
 const port = env.port;
 const kick_text = env.kick_text;
+const last_connections = [];
 
 log.log("Starting SSH-SERVER-BOT with:");
 log.log("TOKEN: " + token);
@@ -192,6 +193,34 @@ bot.on('callback_query', (query) => {
 
 });
 
+function is_new_connection(connection) {
+  // delete old connections (older than 1 hour)
+  let now = Date.now();
+  last_connections.forEach((c, i) => {
+    if(now - c.time > 3600000) {
+      last_connections.splice(i, 1);
+    }
+  });
+
+  // check if the connection is already in the list
+  let found = false;
+  for(let conn of last_connections) {
+    if(conn.ip == connection.ip && conn.user == connection.user) {
+      found = true;
+      break;
+    }
+  }
+
+  // Add the new connection to the list
+  last_connections.push({
+    ip: connection.ip,
+    user: connection.user,
+    time: now
+  });
+
+  return !found;
+}
+
 function onData(data) {
 
   let match;
@@ -199,56 +228,61 @@ function onData(data) {
   if(match) {
     let arg = JSON.parse(match[1]);
 
-    let kick_btn = {
-      text: 'Kick 👞🍑',
-      callback_data: `/kick ${arg.pid} ${arg.user} ${arg.tty}`
-    };
+    if(is_new_connection(arg)) {
 
-    let ipinfo_btn = {
-      text: 'IP info',
-      callback_data: `/ipinfo ${arg.ip}`
-    };
+      let kick_btn = {
+        text: 'Kick 👞🍑',
+        callback_data: `/kick ${arg.pid} ${arg.user} ${arg.tty}`
+      };
 
-    var messageText = "*New Access*\n" + utils.beautify({
-      from: arg.ip,
-      user: arg.user,
-      on: dateformat(Date.now(), "dd mmmm yyyy"),
-      at: dateformat(Date.now(), "HH:MM:ss")
-    });
+      let ipinfo_btn = {
+        text: 'IP info',
+        callback_data: `/ipinfo ${arg.ip}`
+      };
 
-    bot.sendMessage(chatid, messageText, {
-      parse_mode : "Markdown",
-      reply_markup: {
-        inline_keyboard: [
-          [ ipinfo_btn ],
-          [ kick_btn ]
-        ]
-      }
-    }).then((message) => {
-      try {
-        const pid = parseInt(arg.pid);
+      var messageText = "*New Access*\n" + utils.beautify({
+        from: arg.ip,
+        user: arg.user,
+        on: dateformat(Date.now(), "dd mmmm yyyy"),
+        at: dateformat(Date.now(), "HH:MM:ss")
+      });
 
-        utils.waitForProcess(pid).then((value) => {
-          bot.editMessageText(messageText + "\n(Session ended)", {
-            chat_id: chatid,
-            message_id: message.message_id,
-            parse_mode : "Markdown",
-            reply_markup: {
-              inline_keyboard: [
-                [ ipinfo_btn ]
-              ]
-            }
-          })
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    });
+      bot.sendMessage(chatid, messageText, {
+        parse_mode : "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [ ipinfo_btn ],
+            [ kick_btn ]
+          ]
+        }
+      }).then((message) => {
+        try {
+          const pid = parseInt(arg.pid);
 
-    return "Access notified";
+          utils.waitForProcess(pid).then((value) => {
+            bot.editMessageText(messageText + "\n(Session ended)", {
+              chat_id: chatid,
+              message_id: message.message_id,
+              parse_mode : "Markdown",
+              reply_markup: {
+                inline_keyboard: [
+                  [ ipinfo_btn ]
+                ]
+              }
+            })
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      });
+
+      return "Access notified";
+    }
+
+    return "Command not found";
+  } else {
+    return "Access was not notified";
   }
-
-  return "Command not found";
 }
 
 server.startServer(port, onData, "Welcome to SSH-SERVER-BOT server\nHere you can send me useful info that I will send to my owner!\n");
